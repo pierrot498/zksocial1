@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import ConversationItem from "@/components/features/messages/ConversationItem";
 import ConversationMessage from "@/components/features/messages/ConversationMessage";
 import { useState } from "react";
+import { ArrowLeft, ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const CONVERSATIONS = [
   {
@@ -269,10 +271,15 @@ const MESSAGES = {
 };
 
 export default function Page() {
-  const [selectedConversation, setSelectedConversation] = useState(CONVERSATIONS[0]);
+  const [selectedConversation, setSelectedConversation] = useState<(typeof CONVERSATIONS)[0] | null>();
   return (
     <div className="grid h-full w-full bg-background md:grid-cols-[300px_1fr]">
-      <div className="border-b bg-muted/40 p-4 md:border-r md:p-4 max-h-full overflow-scroll">
+      <div
+        className={cn(
+          "border-b bg-muted/40 p-4 md:border-r md:p-4 max-h-full overflow-scroll",
+          selectedConversation && "hidden md:block"
+        )}
+      >
         <div className="mb-4 flex items-center justify-between ">
           <h2 className="text-lg font-semibold">Conversations</h2>
         </div>
@@ -285,70 +292,59 @@ export default function Page() {
               time={conversation.time}
               avatar={conversation.avatar}
               onClick={() => setSelectedConversation(conversation)}
+              isActive={selectedConversation?.id === conversation.id}
             />
           ))}
         </div>
       </div>
-      <div className="flex flex-col h-[calc(100vh-77px)] relative">
-        <div className="border-b p-4 sticky top-0">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 border">
-              <AvatarImage src={selectedConversation.avatar} alt="Avatar" />
-              <AvatarFallback>{selectedConversation.name.slice(0, 2).toLocaleUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div>
-              <h3 className="font-medium">{selectedConversation.name}</h3>
-              <p className="text-sm text-muted-foreground">Online</p>
+      {selectedConversation && (
+        <div className="flex flex-col h-[calc(100vh-77px)] relative">
+          <div className="border-b p-4 sticky top-0">
+            <div className="flex items-center gap-3">
+              <ArrowLeft className="w-6 h-6 md:hidden" onClick={() => setSelectedConversation(null)} />
+              <Avatar className="h-10 w-10 border">
+                <AvatarImage src={selectedConversation.avatar} alt="Avatar" />
+                <AvatarFallback>{selectedConversation.name.slice(0, 2).toLocaleUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div>
+                <h3 className="font-medium">{selectedConversation.name}</h3>
+                <p className="text-sm text-muted-foreground">Online</p>
+              </div>
+            </div>
+          </div>
+          <div className="overflow-scroll p-4 ">
+            <div className="grid gap-4">
+              {MESSAGES[selectedConversation.id as keyof typeof MESSAGES].map((message, index) => (
+                <ConversationMessage
+                  key={index}
+                  message={message.message}
+                  time={message.time}
+                  isMe={message.isMe}
+                  avatar={message.avatar}
+                  name={message.name}
+                />
+              ))}
+            </div>
+          </div>
+          <div className="border-t p-4 sticky bottom-0">
+            <div className="relative">
+              <Textarea
+                placeholder="Type your message..."
+                className="pr-16 min-h-[48px] rounded-2xl resize-none p-4 border border-neutral-400 shadow-sm"
+              />
+              <Button type="submit" size="icon" className="absolute w-8 h-8 top-3 right-3">
+                <ArrowUp className="w-4 h-4" />
+                <span className="sr-only">Send</span>
+              </Button>
             </div>
           </div>
         </div>
-        <div className="overflow-scroll p-4 ">
-          <div className="grid gap-4">
-            {MESSAGES[selectedConversation.id as keyof typeof MESSAGES].map((message, index) => (
-              <ConversationMessage
-                key={index}
-                message={message.message}
-                time={message.time}
-                isMe={message.isMe}
-                avatar={message.avatar}
-                name={message.name}
-              />
-            ))}
-          </div>
+      )}
+      {!selectedConversation && (
+        <div className="hidden  md:flex items-center justify-center h-full">
+          <p className="text-lg text-muted-foreground">Select a conversation to start chatting.</p>
         </div>
-        <div className="border-t p-4 sticky bottom-0">
-          <div className="relative">
-            <Textarea
-              placeholder="Type your message..."
-              className="pr-16 min-h-[48px] rounded-2xl resize-none p-4 border border-neutral-400 shadow-sm"
-            />
-            <Button type="submit" size="icon" className="absolute w-8 h-8 top-3 right-3">
-              <ArrowUpIcon className="w-4 h-4" />
-              <span className="sr-only">Send</span>
-            </Button>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
-  );
-}
-
-function ArrowUpIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="m5 12 7-7 7 7" />
-      <path d="M12 19V5" />
-    </svg>
   );
 }
