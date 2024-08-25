@@ -5,7 +5,7 @@ import { AnimatePresence, PanInfo } from "framer-motion";
 import { RotateCwIcon } from "lucide-react";
 import { useState } from "react";
 
-export const CARDS = [
+const CARDS = [
   { id: 0, emoji: "🍅", name: "Tomato", color: "#E42100" },
   { id: 1, emoji: "🍊", name: "Tangerine", color: "#F36000" },
   { id: 2, emoji: "🍋", name: "Lemon", color: "#F3BC00" },
