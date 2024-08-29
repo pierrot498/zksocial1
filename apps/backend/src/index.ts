@@ -1,7 +1,7 @@
 // src/index.ts
 import express, { Request, Response } from 'express';
-import { User } from './models/user';
-import { Profile } from './models/profile';
+import { User } from './models/User';
+import { Profile } from './models/Profile';
 import { v4 as uuidv4 } from 'uuid';
 
 const app = express();

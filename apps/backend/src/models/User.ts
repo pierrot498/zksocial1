@@ -1,10 +1,10 @@
-import { Profile } from './profile';
+import { Profile } from './Profile';
 
 export interface User {
     id: string;
     username: string;
     email: string;
-    password: string; // In a real-world app, you'd store a hashed password
+    password: string;
     gender: 'male' | 'female';
-    profile?: Profile; // Optional: Profile data for male users
+    profile?: Profile;
 }
