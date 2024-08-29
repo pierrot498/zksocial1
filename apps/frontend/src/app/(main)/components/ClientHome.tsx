@@ -24,7 +24,7 @@ export default function ClientHome() {
 
   const connectKinto = async () => {
     try {
-      const accountInfo = await kintoSDK.connect({ openPopup: true });
+      const accountInfo = await kintoSDK.connect();
       setKintoAccount(accountInfo);
       if (accountInfo.exists) {
         // User has a Kinto account, proceed to check for profile
