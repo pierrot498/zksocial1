@@ -52,9 +52,9 @@ export default function ClientHome() {
 
   const createKintoWallet = async () => {
     try {
-      await kintoSDK.createNewWallet({ openPopup: true });
+      await kintoSDK.createNewWallet();
       // After wallet creation, you might want to refresh the connection
-      const accountInfo = await kintoSDK.connect({ openPopup: true });
+      const accountInfo = await kintoSDK.connect();
       setKintoAccount(accountInfo);
     } catch (error) {
       console.error("Failed to create Kinto wallet:", error);
