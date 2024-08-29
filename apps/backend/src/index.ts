@@ -1,11 +1,14 @@
 // src/index.ts
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import { User } from './models/User';
 import { Profile } from './models/Profile';
 import { v4 as uuidv4 } from 'uuid';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
