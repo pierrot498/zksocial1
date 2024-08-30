@@ -1,107 +1,129 @@
 // src/index.ts
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import { User } from './models/User';
-import { Profile } from './models/Profile';
-import { v4 as uuidv4 } from 'uuid';
+import express, { Request, Response } from "express";
+import cors from "cors";
+import { AppDataSource } from "./data-source";
+import { User } from "./entities/User";
+import { Profile } from "./entities/Profile";
+import { v4 as uuidv4 } from "uuid";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 
-// Middleware to parse JSON bodies
 app.use(express.json());
 
-// In-memory data store
-const users: User[] = [];
-const profiles: Profile[] = [];
-
 // Register a new user
-app.post('/register', (req: Request, res: Response) => {
+app.post("/register", async (req: Request, res: Response) => {
   const { username, email, password, gender } = req.body;
 
-  // Simple validation
   if (!username || !email || !password || !gender) {
-    return res.status(400).json({ message: 'All fields are required.' });
+    return res.status(400).json({ message: "All fields are required." });
   }
 
-  const newUser: User = {
-    id: uuidv4(),
-    username,
-    email,
-    password,
-    gender
-  };
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const newUser = userRepository.create({
+      id: uuidv4(),
+      username,
+      email,
+      password,
+      gender,
+    });
+    const savedUser = await userRepository.save(newUser);
 
-  users.push(newUser);
-  res.status(201).json(newUser);
+    res.status(201).json(savedUser);
+  } catch (error) {
+    console.error("Error registering user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 // Create or update profile for male users
-app.post('/profile', (req: Request, res: Response) => {
+app.post("/profile", async (req: Request, res: Response) => {
   const { userId, bio, age, location } = req.body;
 
-  const user = users.find(u => u.id === userId);
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const profileRepository = AppDataSource.getRepository(Profile);
 
-  if (!user) {
-    return res.status(404).json({ message: 'User not found.' });
-  }
+    const user = await userRepository.findOneBy({ id: userId, gender: "male" });
 
-  if (user.gender !== 'male') {
-    return res.status(403).json({ message: 'Only male users can create profiles.' });
-  }
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found or not a male user." });
+    }
 
-  const existingProfile = profiles.find(p => p.userId === userId);
+    let profile = await profileRepository.findOneBy({ user: { id: userId } });
 
-  if (existingProfile) {
-    existingProfile.bio = bio;
-    existingProfile.age = age;
-    existingProfile.location = location;
-    res.status(200).json(existingProfile);
-  } else {
-    const newProfile: Profile = {
-      id: uuidv4(),
-      userId,
-      bio,
-      age,
-      location
-    };
-    profiles.push(newProfile);
-    res.status(201).json(newProfile);
+    if (profile) {
+      profile.bio = bio;
+      profile.age = age;
+      profile.location = location;
+    } else {
+      profile = profileRepository.create({
+        id: uuidv4(),
+        user,
+        bio,
+        age,
+        location,
+      });
+    }
+
+    const savedProfile = await profileRepository.save(profile);
+    res.status(200).json(savedProfile);
+  } catch (error) {
+    console.error("Error creating/updating profile:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
 // Get all male profiles (for swiping)
-app.get('/profiles', (req: Request, res: Response) => {
-  const maleProfiles = profiles.filter(p => {
-    const user = users.find(u => u.id === p.userId);
-    return user && user.gender === 'male';
-  });
-  res.status(200).json(maleProfiles);
+app.get("/profiles", async (req: Request, res: Response) => {
+  try {
+    const profileRepository = AppDataSource.getRepository(Profile);
+    const profiles = await profileRepository
+      .createQueryBuilder("profile")
+      .leftJoinAndSelect("profile.user", "user")
+      .where("user.gender = :gender", { gender: "male" })
+      .getMany();
+
+    res.status(200).json(profiles);
+  } catch (error) {
+    console.error("Error fetching profiles:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 });
 
 // Swipe functionality for female users
-app.post('/swipe', (req: Request, res: Response) => {
-  const { userId, profileId, action } = req.body; // action can be 'like' or 'dislike'
+app.post("/swipe", async (req: Request, res: Response) => {
+  const { userId, profileId, action } = req.body;
 
-  const user = users.find(u => u.id === userId);
-  const profile = profiles.find(p => p.id === profileId);
+  try {
+    const userRepository = AppDataSource.getRepository(User);
+    const profileRepository = AppDataSource.getRepository(Profile);
 
-  if (!user) {
-    return res.status(404).json({ message: 'User not found.' });
+    const user = await userRepository.findOneBy({ id: userId, gender: "female" });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found or not a female user." });
+    }
+
+    const profile = await profileRepository.findOneBy({ id: profileId });
+
+    if (!profile) {
+      return res.status(404).json({ message: "Profile not found." });
+    }
+
+    // Here you would save the swipe action (like or dislike) to the database
+    res.status(200).json({ message: `You have ${action}d the profile.` });
+  } catch (error) {
+    console.error("Error swiping profile:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
-
-  if (user.gender !== 'female') {
-    return res.status(403).json({ message: 'Only female users can swipe.' });
-  }
-
-  if (!profile) {
-    return res.status(404).json({ message: 'Profile not found.' });
-  }
-
-  // TODO: implement logic to handle 'like' or 'dislike' (e.g., store it in a database or array)
-  res.status(200).json({ message: `You have ${action}d the profile.` });
 });
 
 // Start the server
