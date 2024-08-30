@@ -1,7 +1,7 @@
 // src/index.ts
 import express, { Request, Response } from "express";
 import cors from "cors";
-import { AppDataSource } from "./data-source"; // TypeORM data source
+import { AppDataSource } from "./data-source";
 import { User } from "./entities/User";
 import { Profile } from "./entities/Profile";
 import { v4 as uuidv4 } from "uuid";

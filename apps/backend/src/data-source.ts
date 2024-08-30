@@ -5,13 +5,7 @@ import { User } from "./entities/User";
 import { Profile } from "./entities/Profile";
 import dotenv from "dotenv";
 
-// Load environment variables from .env file
 dotenv.config();
-console.log('DB_HOST:', process.env.DB_HOST);
-console.log('DB_PORT:', process.env.DB_PORT);
-console.log('DB_USER:', process.env.DB_USER);
-console.log('DB_PASSWORD:', process.env.DB_PASSWORD);
-console.log('DB_NAME:', process.env.DB_NAME);
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -25,6 +19,9 @@ export const AppDataSource = new DataSource({
   entities: [User, Profile],
   migrations: [],
   subscribers: [],
+  ssl: {
+    rejectUnauthorized: false,
+  },
 });
 
 AppDataSource.initialize()
