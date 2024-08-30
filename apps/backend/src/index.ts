@@ -22,6 +22,9 @@ app.post("/register", async (req: Request, res: Response) => {
   }
 
   try {
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+    }
     const userRepository = AppDataSource.getRepository(User);
     const newUser = userRepository.create({
       id: uuidv4(),
@@ -44,6 +47,9 @@ app.post("/profile", async (req: Request, res: Response) => {
   const { userId, bio, age, location } = req.body;
 
   try {
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+    }
     const userRepository = AppDataSource.getRepository(User);
     const profileRepository = AppDataSource.getRepository(Profile);
 
@@ -82,6 +88,9 @@ app.post("/profile", async (req: Request, res: Response) => {
 // Get all male profiles (for swiping)
 app.get("/profiles", async (req: Request, res: Response) => {
   try {
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+    }
     const profileRepository = AppDataSource.getRepository(Profile);
     const profiles = await profileRepository
       .createQueryBuilder("profile")
@@ -101,6 +110,9 @@ app.post("/swipe", async (req: Request, res: Response) => {
   const { userId, profileId, action } = req.body;
 
   try {
+    if (!AppDataSource.isInitialized) {
+      await AppDataSource.initialize();
+    }
     const userRepository = AppDataSource.getRepository(User);
     const profileRepository = AppDataSource.getRepository(Profile);
 
