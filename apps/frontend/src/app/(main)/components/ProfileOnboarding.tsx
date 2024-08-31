@@ -8,10 +8,11 @@ interface ProfileOnboardingProps {
 }
 
 interface ProfileData {
+  userId:string;
   name: string;
   age: string;
   bio: string;
-  image: string;
+  //image: string;
 }
 
 export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps) {
@@ -93,12 +94,57 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
     }
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < steps.length - 1) {
       setStep(step + 1);
     } else {
-      const profile: ProfileData = { name, age, bio, image };
-      onComplete(profile);
+      let profile: ProfileData = { userId:"0", name, age, bio };
+      // Register a random user before creating the profile
+      const randomUser = {
+        username: `user_${Math.random().toString(36).substring(7)}`,
+        email: `${Math.random().toString(36).substring(7)}@example.com`,
+        password: Math.random().toString(36).substring(7),
+        gender: Math.random() < 0.5 ? 'male' : 'female'
+      };
+
+      try {
+        const registerResponse = await fetch('https://zksocial-backend.vercel.app/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(randomUser),
+        });
+
+        if (!registerResponse.ok) {
+          throw new Error('Failed to register user');
+        }
+
+        const userData = await registerResponse.json();
+        profile.userId = userData.id; // Add the user ID to the profile data
+      } catch (error) {
+        console.error('Error registering user:', error);
+        // Handle error (e.g., show error message to user)
+        return;
+      }
+      try {
+        const response = await fetch('https://zksocial-backend.vercel.app/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profile),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to save profile');
+        }
+
+        onComplete(profile);
+      } catch (error) {
+        console.error('Error saving profile:', error);
+        // Handle error (e.g., show error message to user)
+      }
     }
   };
 

@@ -1,0 +1,35 @@
+# yaml-language-server: $schema=./node_modules/envio/evm.schema.json
+name: kinto
+networks:
+- id: 7887
+  rpc_config:
+    url: https://rpc.kinto-rpc.com/
+  start_block: 221027
+  contracts:
+  - name: kintoWalletFactory
+    address:
+    - 0x8a4720488CA32f1223ccFE5A087e250fE3BC5D75
+    handler: src/EventHandlers.ts
+    events:
+    - event: AdminChanged(address previousAdmin, address newAdmin)
+    - event: BeaconUpgraded(address indexed beacon)
+    - event: Initialized(uint8 version)
+    - event: KintoWalletFactoryCreation(address indexed account, address indexed owner, uint256 version)
+    - event: KintoWalletFactoryUpgraded(address indexed oldImplementation, address indexed newImplementation)
+    - event: OwnershipTransferred(address indexed previousOwner, address indexed newOwner)
+    - event: Upgraded(address indexed implementation)
+  - name: kintoWallet
+    address:
+    - 0xF90f69f77450F8096B0B5973911183841dE2Aa72
+    handler: src/EventHandlers.ts
+    events:
+    - event: AppKeyCreated(address indexed appKey, address indexed signer)
+    - event: Initialized(uint8 version)
+    - event: InsurancePolicyChanged(uint256 indexed newPolicy, uint256 indexed oldPolicy)
+    - event: KintoWalletInitialized(address indexed entryPoint, address indexed owner)
+    - event: RecovererChanged(address indexed newRecoverer, address indexed recoverer)
+    - event: SignersChanged(address[] newSigners, address[] oldSigners)
+    - event: WalletPolicyChanged(uint256 newPolicy, uint256 oldPolicy)
+    - event: BeaconUpgraded(address indexed beacon)
+rollback_on_reorg: false
+raw_events: true

@@ -1,0 +1,81 @@
+type KintoWallet_AppKeyCreated {
+  id: ID!
+  appKey: String!
+  signer: String!
+}
+
+type KintoWallet_Initialized {
+  id: ID!
+  version: BigInt!
+}
+
+type KintoWallet_InsurancePolicyChanged {
+  id: ID!
+  newPolicy: BigInt!
+  oldPolicy: BigInt!
+}
+
+type KintoWallet_KintoWalletInitialized {
+  id: ID!
+  entryPoint: String!
+  owner: String!
+}
+
+type KintoWallet_RecovererChanged {
+  id: ID!
+  newRecoverer: String!
+  recoverer: String!
+}
+
+type KintoWallet_SignersChanged {
+  id: ID!
+  newSigners: [String!]!
+  oldSigners: [String!]!
+}
+
+type KintoWallet_WalletPolicyChanged {
+  id: ID!
+  newPolicy: BigInt!
+  oldPolicy: BigInt!
+}
+
+type KintoWalletFactory_AdminChanged {
+  id: ID!
+  previousAdmin: String!
+  newAdmin: String!
+}
+
+type KintoWalletFactory_BeaconUpgraded {
+  id: ID!
+  beacon: String!
+}
+
+type KintoWalletFactory_Initialized {
+  id: ID!
+  version: BigInt!
+}
+
+type KintoWalletFactory_KintoWalletFactoryCreation {
+  id: ID!
+  account: String!
+  owner: String!
+  version: BigInt!
+}
+
+type KintoWalletFactory_KintoWalletFactoryUpgraded {
+  id: ID!
+  oldImplementation: String!
+  newImplementation: String!
+}
+
+type KintoWalletFactory_OwnershipTransferred {
+  id: ID!
+  previousOwner: String!
+  newOwner: String!
+}
+
+type KintoWalletFactory_Upgraded {
+  id: ID!
+  implementation: String!
+}
+
