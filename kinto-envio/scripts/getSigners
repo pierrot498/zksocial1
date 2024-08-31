@@ -1,0 +1,10 @@
+query GetKintoWalletSignersChanged($first: Int = 10, $skip: Int = 0) {
+  KintoWallet_SignersChanged(
+    order_by: {id: desc}
+  ) {
+    id
+    db_write_timestamp
+    newSigners
+    oldSigners
+  }
+}

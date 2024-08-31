@@ -1,0 +1,13 @@
+# Try out GraphQL queries here
+query GetKintoWalletFactoryCreations($first: Int = 10, $skip: Int = 0) {
+  KintoWalletFactory_KintoWalletFactoryCreation(
+ 
+    order_by: {id: desc}
+  ) {
+    id
+    account
+    owner
+    version
+    db_write_timestamp
+  }
+}
