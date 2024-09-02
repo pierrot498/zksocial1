@@ -4,61 +4,84 @@ import cors from "cors";
 import { AppDataSource } from "./data-source";
 import { User } from "./entities/User";
 import { Profile } from "./entities/Profile";
-import { v4 as uuidv4 } from "uuid";
+import { ethers } from "ethers";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-
 app.use(express.json());
 
-// Register a new user
-app.post("/register", async (req: Request, res: Response) => {
-  const { username, email, password, gender } = req.body;
+const initializeDataSource = async () => {
+  if (!AppDataSource.isInitialized) {
+    await AppDataSource.initialize();
+    console.log("Database connected!");
+  }
+};
 
-  if (!username || !email || !password || !gender) {
-    return res.status(400).json({ message: "All fields are required." });
+export async function authenticateUser(req: Request, res: Response) {
+  const { signature, walletAddress, gender } = req.body;
+
+  if (!signature || !walletAddress) {
+    return res.status(400).json({ message: "Signature and wallet address are required." });
   }
 
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-    const userRepository = AppDataSource.getRepository(User);
-    const newUser = userRepository.create({
-      id: uuidv4(),
-      username,
-      email,
-      password,
-      gender,
-    });
-    const savedUser = await userRepository.save(newUser);
+    await AppDataSource.initialize();
 
-    res.status(201).json(savedUser);
+    // Step 1: Verify the signature
+    var message = "Sign this message to connect with Kinto.";
+    const recoveredAddress = ethers.verifyMessage(message, signature);
+
+    if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+      return res.status(400).json({ message: "Invalid signature." });
+    }
+
+    // Step 2: Find or create user
+    const userRepository = AppDataSource.getRepository(User);
+    let user = await userRepository.findOneBy({ walletAddress });
+    let isNewUser = false;
+
+    if (!user) {
+      // Signup
+      if (!gender) {
+        return res.status(400).json({ message: "Gender is required for new users." });
+      }
+      user = userRepository.create({ walletAddress, isVerified: true, gender });
+      isNewUser = true;
+    } else {
+      // Login
+      user.isVerified = true;
+      if (gender) {
+        user.gender = gender;
+      }
+    }
+
+    await userRepository.save(user);
+
+    var message = isNewUser ? "User registered and verified successfully." : "User authenticated successfully.";
+    res.status(200).json({ message, user, isNewUser });
   } catch (error) {
-    console.error("Error registering user:", error);
+    console.error("Error authenticating user:", error);
     res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    await AppDataSource.destroy();
   }
-});
+}
 
 // Create or update profile for male users
 app.post("/profile", async (req: Request, res: Response) => {
   const { userId, bio, age, location } = req.body;
 
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
+    await initializeDataSource();
     const userRepository = AppDataSource.getRepository(User);
     const profileRepository = AppDataSource.getRepository(Profile);
 
     const user = await userRepository.findOneBy({ id: userId, gender: "male" });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found or not a male user." });
+      return res.status(404).json({ message: "User not found or not a male user." });
     }
 
     let profile = await profileRepository.findOneBy({ user: { id: userId } });
@@ -69,7 +92,6 @@ app.post("/profile", async (req: Request, res: Response) => {
       profile.location = location;
     } else {
       profile = profileRepository.create({
-        id: uuidv4(),
         user,
         bio,
         age,
@@ -88,9 +110,7 @@ app.post("/profile", async (req: Request, res: Response) => {
 // Get all male profiles (for swiping)
 app.get("/profiles", async (req: Request, res: Response) => {
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
+    await initializeDataSource();
     const profileRepository = AppDataSource.getRepository(Profile);
     const profiles = await profileRepository
       .createQueryBuilder("profile")
@@ -110,18 +130,14 @@ app.post("/swipe", async (req: Request, res: Response) => {
   const { userId, profileId, action } = req.body;
 
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
+    await initializeDataSource();
     const userRepository = AppDataSource.getRepository(User);
     const profileRepository = AppDataSource.getRepository(Profile);
 
     const user = await userRepository.findOneBy({ id: userId, gender: "female" });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "User not found or not a female user." });
+      return res.status(404).json({ message: "User not found or not a female user." });
     }
 
     const profile = await profileRepository.findOneBy({ id: profileId });

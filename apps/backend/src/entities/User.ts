@@ -7,18 +7,17 @@ export class User {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column()
-  username!: string;
-
   @Column({ unique: true })
-  email!: string;
+  walletAddress!: string;
 
-  @Column()
-  password!: string;
+  @Column({ default: false })
+  isVerified!: boolean;
 
-  @Column()
+  @Column({ type: "enum", enum: ["male", "female"] })
   gender!: "male" | "female";
 
-  @OneToMany(() => Profile, (profile) => profile.user)
+  @OneToMany(() => Profile, (profile) => profile.user, {
+    cascade: true,
+  })
   profiles!: Profile[];
 }
