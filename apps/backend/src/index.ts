@@ -1,5 +1,5 @@
 // src/index.ts
-import express, { Request, Response } from "express";
+import express, { Express, Request, Response } from "express";
 import cors from "cors";
 import { AppDataSource } from "./data-source";
 import { User } from "./entities/User";
@@ -19,54 +19,56 @@ const initializeDataSource = async () => {
   }
 };
 
-export async function authenticateUser(req: Request, res: Response) {
-  const { signature, walletAddress, gender } = req.body;
+export function setupAuthRoute(app: Express) {
+  app.post("/authenticate", async (req: Request, res: Response) => {
+    const { signature, walletAddress, gender } = req.body;
 
-  if (!signature || !walletAddress) {
-    return res.status(400).json({ message: "Signature and wallet address are required." });
-  }
-
-  try {
-    await AppDataSource.initialize();
-
-    // Step 1: Verify the signature
-    var message = "Sign this message to connect with Kinto.";
-    const recoveredAddress = ethers.verifyMessage(message, signature);
-
-    if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
-      return res.status(400).json({ message: "Invalid signature." });
+    if (!signature || !walletAddress) {
+      return res.status(400).json({ message: "Signature and wallet address are required." });
     }
 
-    // Step 2: Find or create user
-    const userRepository = AppDataSource.getRepository(User);
-    let user = await userRepository.findOneBy({ walletAddress });
-    let isNewUser = false;
+    try {
+      await AppDataSource.initialize();
 
-    if (!user) {
-      // Signup
-      if (!gender) {
-        return res.status(400).json({ message: "Gender is required for new users." });
+      // Step 1: Verify the signature
+      var message = "Sign this message to connect with Kinto.";
+      const recoveredAddress = ethers.verifyMessage(message, signature);
+
+      if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+        return res.status(400).json({ message: "Invalid signature." });
       }
-      user = userRepository.create({ walletAddress, isVerified: true, gender });
-      isNewUser = true;
-    } else {
-      // Login
-      user.isVerified = true;
-      if (gender) {
-        user.gender = gender;
+
+      // Step 2: Find or create user
+      const userRepository = AppDataSource.getRepository(User);
+      let user = await userRepository.findOneBy({ walletAddress });
+      let isNewUser = false;
+
+      if (!user) {
+        // Signup
+        if (!gender) {
+          return res.status(400).json({ message: "Gender is required for new users." });
+        }
+        user = userRepository.create({ walletAddress, isVerified: true, gender });
+        isNewUser = true;
+      } else {
+        // Login
+        user.isVerified = true;
+        if (gender) {
+          user.gender = gender;
+        }
       }
+
+      await userRepository.save(user);
+
+      var message = isNewUser ? "User registered and verified successfully." : "User authenticated successfully.";
+      res.status(200).json({ message, user, isNewUser });
+    } catch (error) {
+      console.error("Error authenticating user:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    } finally {
+      await AppDataSource.destroy();
     }
-
-    await userRepository.save(user);
-
-    var message = isNewUser ? "User registered and verified successfully." : "User authenticated successfully.";
-    res.status(200).json({ message, user, isNewUser });
-  } catch (error) {
-    console.error("Error authenticating user:", error);
-    res.status(500).json({ message: "Internal Server Error" });
-  } finally {
-    await AppDataSource.destroy();
-  }
+  });
 }
 
 // Create or update profile for male users
