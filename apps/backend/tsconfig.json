@@ -8,7 +8,7 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist",
+    "outDir": "./public",
     "rootDir": "./src"
   },
   "include": ["src/**/*"],
