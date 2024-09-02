@@ -1,3 +1,4 @@
+import { CreateClient } from "@/components/XMTPPClient";
 import Link from "next/link";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -7,6 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <p className="text-2xl font-semibold">Spermify 👼</p>
         <Link href="/messages">Messages</Link>
         <Link href="/matching">Matching</Link>
+        <CreateClient />
       </div>
       <div className="h-[calc(100vh-65px)]">{children}</div>
     </div>

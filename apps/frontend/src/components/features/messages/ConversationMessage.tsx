@@ -20,7 +20,7 @@ export default function ConversationMessage({
         <AvatarFallback>{name.slice(0, 2).toLocaleUpperCase()}</AvatarFallback>
       </Avatar>
       <div className="rounded-md bg-muted p-3 text-sm">
-        <p>{message.slice(0, 30)}</p>
+        <p>{message}</p>
         <div className="mt-2 text-xs text-muted-foreground">{time}</div>
       </div>
     </div>
