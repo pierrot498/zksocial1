@@ -19,57 +19,56 @@ const initializeDataSource = async () => {
   }
 };
 
-export function setupAuthRoute(app: Express) {
-  app.post("/authenticate", async (req: Request, res: Response) => {
-    const { signature, walletAddress, gender } = req.body;
+app.post("/authenticate", async (req: Request, res: Response) =>  {
+  const { signature, walletAddress, gender } = req.body;
 
-    if (!signature || !walletAddress) {
-      return res.status(400).json({ message: "Signature and wallet address are required." });
+  if (!signature || !walletAddress) {
+    return res.status(400).json({ message: "Signature and wallet address are required." });
+  }
+
+  try {
+    await AppDataSource.initialize();
+
+    // Step 1: Verify the signature
+    var message = "Sign this message to connect with Kinto.";
+    const recoveredAddress = ethers.verifyMessage(message, signature);
+
+    if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
+      return res.status(400).json({ message: "Invalid signature." });
     }
 
-    try {
-      await AppDataSource.initialize();
+    // Step 2: Find or create user
+    const userRepository = AppDataSource.getRepository(User);
+    let user = await userRepository.findOneBy({ walletAddress });
+    let isNewUser = false;
 
-      // Step 1: Verify the signature
-      var message = "Sign this message to connect with Kinto.";
-      const recoveredAddress = ethers.verifyMessage(message, signature);
-
-      if (recoveredAddress.toLowerCase() !== walletAddress.toLowerCase()) {
-        return res.status(400).json({ message: "Invalid signature." });
+    if (!user) {
+      // Signup
+      if (!gender) {
+        return res.status(400).json({ message: "Gender is required for new users." });
       }
-
-      // Step 2: Find or create user
-      const userRepository = AppDataSource.getRepository(User);
-      let user = await userRepository.findOneBy({ walletAddress });
-      let isNewUser = false;
-
-      if (!user) {
-        // Signup
-        if (!gender) {
-          return res.status(400).json({ message: "Gender is required for new users." });
-        }
-        user = userRepository.create({ walletAddress, isVerified: true, gender });
-        isNewUser = true;
-      } else {
-        // Login
-        user.isVerified = true;
-        if (gender) {
-          user.gender = gender;
-        }
+      user = userRepository.create({ walletAddress, isVerified: true, gender });
+      isNewUser = true;
+    } else {
+      // Login
+      user.isVerified = true;
+      if (gender) {
+        user.gender = gender;
       }
-
-      await userRepository.save(user);
-
-      var message = isNewUser ? "User registered and verified successfully." : "User authenticated successfully.";
-      res.status(200).json({ message, user, isNewUser });
-    } catch (error) {
-      console.error("Error authenticating user:", error);
-      res.status(500).json({ message: "Internal Server Error" });
-    } finally {
-      await AppDataSource.destroy();
     }
-  });
-}
+
+    await userRepository.save(user);
+
+    var message = isNewUser ? "User registered and verified successfully." : "User authenticated successfully.";
+    res.status(200).json({ message, user, isNewUser });
+  } catch (error) {
+    console.error("Error authenticating user:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    await AppDataSource.destroy();
+  }
+});
+
 
 // Create or update profile for male users
 app.post("/profile", async (req: Request, res: Response) => {
