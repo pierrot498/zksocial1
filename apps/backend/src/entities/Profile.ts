@@ -7,7 +7,7 @@ export class Profile {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @ManyToOne(() => User, (user) => user.profiles)
+  @ManyToOne(() => User, (user) => user.profiles, { onDelete: 'CASCADE', nullable: false })
   user!: User;
 
   @Column()
