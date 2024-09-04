@@ -1,5 +1,5 @@
 // src/entities/User.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from "typeorm";
 import { Profile } from "./Profile";
 
 @Entity()
@@ -16,8 +16,8 @@ export class User {
   @Column({ type: "enum", enum: ["male", "female"] })
   gender!: "male" | "female";
 
-  @OneToMany(() => Profile, (profile) => profile.user, {
+  @OneToOne(() => Profile, (profile) => profile.user, {
     cascade: true,
   })
-  profiles!: Profile[];
+  profile!: Profile[];
 }

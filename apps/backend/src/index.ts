@@ -19,7 +19,7 @@ const initializeDataSource = async () => {
   }
 };
 
-app.post("/authenticate", async (req: Request, res: Response) =>  {
+app.post("/authenticate", async (req: Request, res: Response) => {
   const { signature, walletAddress, gender } = req.body;
 
   if (!signature || !walletAddress) {
@@ -59,10 +59,12 @@ app.post("/authenticate", async (req: Request, res: Response) =>  {
       }
     }
 
+    const isOnboardingDone = user.profile !== null;
+
     await userRepository.save(user);
 
     var message = isNewUser ? "User registered and verified successfully." : "User authenticated successfully.";
-    res.status(200).json({ message, user, isNewUser });
+    res.status(200).json({ message, user, isNewUser, isOnboardingDone });
   } catch (error) {
     console.error("Error authenticating user:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -70,7 +72,6 @@ app.post("/authenticate", async (req: Request, res: Response) =>  {
     await AppDataSource.destroy();
   }
 });
-
 
 // Create or update profile for male users
 app.post("/profile", async (req: Request, res: Response) => {
