@@ -32,7 +32,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           placeholder="Your name"
           className="w-full p-4 text-2xl border-b-2 border-pink-500 focus:outline-none"
         />
-      )
+      ),
     },
     {
       title: "How old are you?",
@@ -44,7 +44,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           placeholder="Your age"
           className="w-full p-4 text-2xl border-b-2 border-pink-500 focus:outline-none"
         />
-      )
+      ),
     },
     {
       title: "Tell us about yourself",
@@ -55,7 +55,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           placeholder="A short bio about yourself"
           className="w-full p-4 text-xl border-2 border-pink-500 rounded-lg h-40 focus:outline-none"
         />
-      )
+      ),
     },
     {
       title: "Add a profile picture",
@@ -85,12 +85,12 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           </label>
           {image && (
             <div className="mt-4 w-48 h-48 relative">
-              <Image src={image} alt="Profile" fill style={{objectFit: "cover"}} className="rounded-full" />
+              <Image src={image} alt="Profile" fill style={{ objectFit: "cover" }} className="rounded-full" />
             </div>
           )}
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   const handleNext = () => {
@@ -104,7 +104,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md">
-      <div className="h-4 bg-pink-500" style={{width: `${((step + 1) / steps.length) * 100}%`}}></div>
+      <div className="h-4 bg-pink-500" style={{ width: `${((step + 1) / steps.length) * 100}%` }}></div>
       <div className="p-8">
         <h2 className="text-3xl font-bold mb-8 text-center text-pink-500">{steps[step].title}</h2>
         {steps[step].component}

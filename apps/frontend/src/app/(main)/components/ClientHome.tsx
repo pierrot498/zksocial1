@@ -30,12 +30,14 @@ export default function ClientHome() {
       const accountInfo = await kintoSDK.connect();
       setKintoAccount(accountInfo);
       if (accountInfo.exists) {
-        // User has a Kinto account, proceed to check for profile
-        const storedProfile = localStorage.getItem("userProfile");
-        if (storedProfile) {
-          setProfile(JSON.parse(storedProfile));
-        } else {
-          setShowOnboarding(true);
+        // Sign a message with Kinto
+        try {
+          const message = "Sign this message to authenticate with our app";
+          const signature = await kintoSDK.signMessage(message);
+          console.log("Message signed successfully:", signature);
+        } catch (error) {
+          console.error("Failed to sign message:", error);
+          setError("Failed to authenticate. Please try again.");
         }
       } else {
         // User needs to create a Kinto account

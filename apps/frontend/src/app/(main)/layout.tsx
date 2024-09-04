@@ -1,4 +1,5 @@
 import { CreateClient } from "@/components/XMTPPClient";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Link from "next/link";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -9,6 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <Link href="/messages">Messages</Link>
         <Link href="/matching">Matching</Link>
         <CreateClient />
+        <ConnectButton />
       </div>
       <div className="h-[calc(100vh-65px)]">{children}</div>
     </div>
