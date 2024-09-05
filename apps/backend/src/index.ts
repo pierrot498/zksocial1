@@ -63,8 +63,6 @@ AppDataSource.initialize()
       } catch (error) {
         console.error("Error authenticating user:", error);
         res.status(500).json({ message: "Internal Server Error" });
-      } finally {
-        await AppDataSource.destroy();
       }
     });
 
