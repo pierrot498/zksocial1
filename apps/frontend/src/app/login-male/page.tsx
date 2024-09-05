@@ -21,7 +21,11 @@ export default function LoginMale() {
         .then((res) => {
           console.log("res", res);
           localStorage.setItem("user_id_" + address, res.data.user.id);
-          router.push("/onboarding-male");
+          if (res.data.isOnboardingDone) {
+            router.push("/profile-male");
+          } else {
+            router.push("/onboarding-male");
+          }
         });
     };
 

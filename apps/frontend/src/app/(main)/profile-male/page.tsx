@@ -29,7 +29,7 @@ export default function ProfileMalePage() {
   });
   return (
     <div className="w-full max-w-md">
-      <TinderCard card={profile} />
+      {profile ? <TinderCard card={profile} /> : <div>Loading...</div>}
       <div className="mt-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">Profile Complete!</h2>
         <Link
