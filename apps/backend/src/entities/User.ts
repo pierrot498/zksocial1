@@ -19,5 +19,5 @@ export class User {
   @OneToOne(() => Profile, (profile) => profile.user, {
     cascade: true,
   })
-  profile!: Profile[];
+  profile!: Profile;
 }
