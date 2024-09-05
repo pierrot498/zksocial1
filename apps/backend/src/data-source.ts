@@ -7,8 +7,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const requiredEnvVars = ['DB_HOST', 'DB_PORT', 'DB_USER', 'DB_PASSWORD', 'DB_NAME'];
-requiredEnvVars.forEach(envVar => {
+const requiredEnvVars = ["DB_HOST", "DB_PORT", "DB_USER", "DB_PASSWORD", "DB_NAME"];
+requiredEnvVars.forEach((envVar) => {
   if (!process.env[envVar]) {
     throw new Error(`Environment variable ${envVar} is not set.`);
   }
@@ -16,6 +16,7 @@ requiredEnvVars.forEach(envVar => {
 
 export const AppDataSource = new DataSource({
   type: "postgres",
+  schema: "public",
   host: process.env.DB_HOST,
   port: Number(process.env.DB_PORT),
   username: process.env.DB_USER,

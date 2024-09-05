@@ -7,15 +7,15 @@ export class Profile {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @OneToOne(() => User, (user) => user.profile, { onDelete: "CASCADE", nullable: false })
+  @OneToOne(() => User, (user) => user.profile, { onDelete: "CASCADE" })
   user!: User;
 
-  @Column()
-  bio!: string;
+  @Column({ nullable: true })
+  bio?: string;
 
-  @Column()
-  age!: number;
+  @Column({ nullable: true })
+  age?: number;
 
-  @Column()
-  location!: string;
+  @Column({ nullable: true })
+  location?: string;
 }

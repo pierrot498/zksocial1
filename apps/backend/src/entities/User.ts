@@ -1,5 +1,5 @@
 // src/entities/User.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, JoinColumn, OneToOne } from "typeorm";
 import { Profile } from "./Profile";
 
 @Entity()
@@ -18,6 +18,8 @@ export class User {
 
   @OneToOne(() => Profile, (profile) => profile.user, {
     cascade: true,
+    nullable: true,
   })
-  profile!: Profile;
+  @JoinColumn()
+  profile?: Profile;
 }

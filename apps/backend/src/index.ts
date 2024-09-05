@@ -1,5 +1,4 @@
-import "reflect-metadata";
-import express, { Express, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import { AppDataSource } from "./data-source";
 import { User } from "./entities/User";
@@ -54,7 +53,9 @@ AppDataSource.initialize()
           }
         }
 
-        const isOnboardingDone = user.profile !== null;
+        const isOnboardingDone = await AppDataSource.getRepository(Profile)
+          .findOneBy({ user: { id: user.id } })
+          .then((profile) => profile !== null);
 
         await userRepository.save(user);
 
