@@ -114,7 +114,10 @@ app.post("/profile", async (req: Request, res: Response) => {
 });
 
 app.get("/profile", async (req: Request, res: Response) => {
-  const { userId } = req.body;
+  const { userId } = req.query as { userId?: string };
+  if (!userId) {
+    return res.status(400).json({ message: "User ID is required." });
+  }
   try {
     if (!AppDataSource.isInitialized) {
       await AppDataSource.initialize();
