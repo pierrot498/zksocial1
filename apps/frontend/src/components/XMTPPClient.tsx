@@ -1,7 +1,6 @@
 "use client";
 import { useClient } from "@xmtp/react-sdk";
 import { BrowserProvider } from "ethers";
-import { Signer } from "ethers";
 import { useCallback, useEffect, useState } from "react";
 
 export const CreateClient = () => {
