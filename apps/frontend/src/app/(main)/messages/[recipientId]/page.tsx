@@ -31,6 +31,7 @@ export default function Page({ params }: { params: { recipientId: string } }) {
       const newConversation = await startConversation(params.recipientId, messageBody);
       console.log("newConversation", newConversation);
 
+      // @ts-expect-error -- idk TODO Fix
       setConversation(newConversation.conversation);
       setMessageBody("");
     }
