@@ -1,24 +1,26 @@
 "use client";
 
-import Card, { CardType, SwipeType } from "@/components/features/matching/Card";
-import { AnimatePresence, PanInfo } from "framer-motion";
-import { RotateCwIcon } from "lucide-react";
-import { useState } from "react";
-
-const CARDS = [
-  { id: 0, emoji: "🍅", name: "Tomato", color: "#E42100" },
-  { id: 1, emoji: "🍊", name: "Tangerine", color: "#F36000" },
-  { id: 2, emoji: "🍋", name: "Lemon", color: "#F3BC00" },
-  { id: 3, emoji: "🍐", name: "Pear", color: "#A0A226" },
-  { id: 4, emoji: "🥬", name: "Lettuce", color: "#349B19" },
-  { id: 5, emoji: "🫐", name: "Blueberries", color: "#70BBFF" },
-  { id: 6, emoji: "🍆", name: "Eggplant", color: "#7F4877" },
-  { id: 7, emoji: "🍇", name: "Grapes", color: "#BC2A6E" },
-];
+import Card, { SwipeType } from "@/components/features/matching/Card";
+import { axiosInstance } from "@/lib/axios";
+import { useQuery } from "@tanstack/react-query";
+import { AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export type ResultType = { [k in SwipeType]: number };
 
-export type HistoryType = CardType & { swipe: SwipeType };
+interface Profile {
+  id: string;
+  name: string;
+  age: number;
+  bio?: string;
+  location?: string;
+  user: {
+    walletAddress: string;
+  };
+  image: string; // Base 64 image
+}
+
+export type HistoryType = Profile & { swipe: SwipeType };
 
 interface CounterProps {
   testid: string;
@@ -41,7 +43,19 @@ const Counter: React.FC<CounterProps> = ({ count, label, testid }) => {
 };
 
 export default function Page() {
-  const [cards, setCards] = useState(CARDS);
+  const [cards, setCards] = useState<Profile[]>([]);
+
+  const { data: cardsData } = useQuery({
+    queryKey: ["cards"],
+    queryFn: () => {
+      return axiosInstance.get("/profiles").then((res) => res.data);
+    },
+  });
+
+  useEffect(() => {
+    if (!cardsData) return;
+    setCards(cardsData);
+  }, [cardsData]);
 
   const [result, setResult] = useState<ResultType>({
     like: 0,
@@ -59,25 +73,7 @@ export default function Page() {
     setResult((current) => ({ ...current, [swipe]: current[swipe] + 1 }));
   };
 
-  const [leaveX, setLeaveX] = useState(0);
-  const [leaveY, setLeaveY] = useState(0);
-
-  const onSuperlike = () => {
-    setLeaveY(-2000);
-    removeCard(cards[activeIndex], "superlike");
-  };
-
-  const onLike = () => {
-    setLeaveX(1000);
-    removeCard(cards[activeIndex], "like");
-  };
-
-  const onNope = () => {
-    setLeaveX(-1000);
-    removeCard(cards[activeIndex], "nope");
-  };
-
-  const cardClassNames = `absolute h-[430px] w-[300px] bg-white shadow-xl rounded-2xl flex flex-col justify-center items-center cursor-grab`;
+  console.log(cards);
 
   return (
     <>
@@ -86,7 +82,7 @@ export default function Page() {
           <div className="relative h-[582px] w-[300px]">
             <AnimatePresence>
               {cards.map((card, index) => (
-                <Card key={card.name} active={index === activeIndex} removeCard={removeCard} card={card} />
+                <Card key={card.id} active={index === activeIndex} removeCard={removeCard} card={card} />
               ))}
             </AnimatePresence>
             {cards.length === 0 ? <span className=" text-xl">End of Stack</span> : null}

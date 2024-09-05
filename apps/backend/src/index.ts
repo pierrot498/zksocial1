@@ -68,7 +68,7 @@ AppDataSource.initialize()
     });
 
     app.post("/profile", async (req: Request, res: Response) => {
-      const { userId, bio, age, location } = req.body;
+      const { userId, bio, age, location, name, image } = req.body;
 
       try {
         const userRepository = AppDataSource.getRepository(User);
@@ -86,12 +86,16 @@ AppDataSource.initialize()
           profile.bio = bio;
           profile.age = age;
           profile.location = location;
+          profile.name = name;
+          profile.image = image;
         } else {
           profile = profileRepository.create({
             user,
             bio,
             age,
             location,
+            name,
+            image,
           });
         }
 

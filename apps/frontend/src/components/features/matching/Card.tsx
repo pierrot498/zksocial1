@@ -1,20 +1,26 @@
+import TinderCard from "@/app/(main)/components/TinderCard";
 import { PanInfo, motion } from "framer-motion";
 import { Heart, RotateCwIcon, X } from "lucide-react";
 import { useState } from "react";
 
 export type SwipeType = "like" | "nope" | "superlike";
 
-export interface CardType {
-  id: number;
-  emoji: string;
+interface Profile {
+  id: string;
   name: string;
-  color: string;
+  age: number;
+  bio?: string;
+  location?: string;
+  user: {
+    walletAddress: string;
+  };
+  image?: string;
 }
 
 export interface CardProps {
-  card: CardType;
+  card: Profile;
   active: boolean;
-  removeCard: (oldCard: CardType, swipe: SwipeType) => void;
+  removeCard: (oldCard: Profile, swipe: SwipeType) => void;
 }
 const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
   const [leaveX, setLeaveX] = useState(0);
@@ -46,7 +52,8 @@ const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
       return onNope();
     }
   };
-  const classNames = `h-[430px] w-[300px] bg-white shadow-xl rounded-2xl flex flex-col justify-center items-center cursor-grab`;
+  const classNames = `h-[430px] w-[300px] bg-white flex flex-col justify-center items-center cursor-grab`;
+
   return (
     <div className="absolute">
       <div>
@@ -60,7 +67,7 @@ const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
             }}
             animate={{
               scale: 1.05,
-              rotate: `${card.name.length % 2 === 0 ? 6 : -6}deg`,
+              rotate: `${card.age % 2 === 0 ? 6 : -6}deg`,
             }}
             exit={{
               x: leaveX,
@@ -72,13 +79,11 @@ const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
             className={classNames}
             data-testid="active-card"
           >
-            <Emoji label={card.name} emoji={card.emoji} />
-            <Title title={card.name} color={card.color} />
+            <TinderCard card={card} />
           </motion.div>
         ) : (
-          <div className={`${classNames} ${card.name.length % 2 === 0 ? "rotate-6" : "-rotate-6"}`}>
-            <Emoji label={card.name} emoji={card.emoji} />
-            <Title title={card.name} color={card.color} />
+          <div className={`${classNames} ${card.age % 2 === 0 ? "rotate-6" : "-rotate-6"}`}>
+            <TinderCard card={card} />
           </div>
         )}
       </div>

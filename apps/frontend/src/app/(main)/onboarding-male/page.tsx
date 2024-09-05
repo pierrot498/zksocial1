@@ -23,7 +23,7 @@ export default function OnboardingMalePage() {
               userId,
             })
             .then((res) => {
-              router.push("/profile");
+              router.push("/profile-male");
             });
         }}
       />

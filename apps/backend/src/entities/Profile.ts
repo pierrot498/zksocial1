@@ -10,6 +10,9 @@ export class Profile {
   @OneToOne(() => User, (user) => user.profile, { onDelete: "CASCADE" })
   user!: User;
 
+  @Column()
+  name!: string;
+
   @Column({ nullable: true })
   bio?: string;
 
@@ -18,4 +21,7 @@ export class Profile {
 
   @Column({ nullable: true })
   location?: string;
+
+  @Column({ nullable: true })
+  image?: string;
 }
