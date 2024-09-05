@@ -1,26 +1,15 @@
 import TinderCard from "@/app/(main)/components/TinderCard";
+import { IProfile } from "@/types";
 import { PanInfo, motion } from "framer-motion";
 import { Heart, RotateCwIcon, X } from "lucide-react";
 import { useState } from "react";
 
 export type SwipeType = "like" | "nope" | "superlike";
 
-interface Profile {
-  id: string;
-  name: string;
-  age: number;
-  bio?: string;
-  location?: string;
-  user: {
-    walletAddress: string;
-  };
-  image?: string;
-}
-
 export interface CardProps {
-  card: Profile;
+  card: IProfile;
   active: boolean;
-  removeCard: (oldCard: Profile, swipe: SwipeType) => void;
+  removeCard: (oldCard: IProfile, swipe: SwipeType) => void;
 }
 const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
   const [leaveX, setLeaveX] = useState(0);

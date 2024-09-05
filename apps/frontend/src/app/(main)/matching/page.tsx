@@ -2,25 +2,14 @@
 
 import Card, { SwipeType } from "@/components/features/matching/Card";
 import { axiosInstance } from "@/lib/axios";
+import { IProfile } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export type ResultType = { [k in SwipeType]: number };
 
-interface Profile {
-  id: string;
-  name: string;
-  age: number;
-  bio?: string;
-  location?: string;
-  user: {
-    walletAddress: string;
-  };
-  image: string; // Base 64 image
-}
-
-export type HistoryType = Profile & { swipe: SwipeType };
+export type HistoryType = IProfile & { swipe: SwipeType };
 
 interface CounterProps {
   testid: string;
@@ -43,7 +32,7 @@ const Counter: React.FC<CounterProps> = ({ count, label, testid }) => {
 };
 
 export default function Page() {
-  const [cards, setCards] = useState<Profile[]>([]);
+  const [cards, setCards] = useState<IProfile[]>([]);
 
   const { data: cardsData } = useQuery({
     queryKey: ["cards"],
@@ -64,7 +53,7 @@ export default function Page() {
   });
   // index of last card
   const activeIndex = cards.length - 1;
-  const removeCard = (oldCard: CardType, swipe: SwipeType) => {
+  const removeCard = (oldCard: IProfile, swipe: SwipeType) => {
     setCards((current) =>
       current.filter((card) => {
         return card.id !== oldCard.id;
