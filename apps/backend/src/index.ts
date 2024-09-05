@@ -27,10 +27,6 @@ app.post("/authenticate", async (req: Request, res: Response) => {
   }
 
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
-
     // Step 1: Verify the signature
     var message = "Sign this message to connect with Kinto.";
     const recoveredAddress = ethers.verifyMessage(message, signature);
@@ -78,9 +74,6 @@ app.post("/profile", async (req: Request, res: Response) => {
   const { userId, bio, age, location } = req.body;
 
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
     const userRepository = AppDataSource.getRepository(User);
     const profileRepository = AppDataSource.getRepository(Profile);
 
@@ -119,9 +112,6 @@ app.get("/profile", async (req: Request, res: Response) => {
     return res.status(400).json({ message: "User ID is required." });
   }
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
     const userRepository = AppDataSource.getRepository(User);
     const profileRepository = AppDataSource.getRepository(Profile);
 
@@ -147,9 +137,6 @@ app.get("/profile", async (req: Request, res: Response) => {
 // Get all male profiles (for swiping)
 app.get("/profiles", async (req: Request, res: Response) => {
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
     const profileRepository = AppDataSource.getRepository(Profile);
     const profiles = await profileRepository
       .createQueryBuilder("profile")
@@ -169,9 +156,6 @@ app.post("/swipe", async (req: Request, res: Response) => {
   const { userId, profileId, action } = req.body;
 
   try {
-    if (!AppDataSource.isInitialized) {
-      await AppDataSource.initialize();
-    }
     const userRepository = AppDataSource.getRepository(User);
     const profileRepository = AppDataSource.getRepository(Profile);
 
@@ -198,4 +182,5 @@ app.post("/swipe", async (req: Request, res: Response) => {
 // Start the server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
+  initializeDataSource();
 });
