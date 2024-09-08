@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 export default function ProfileMalePage() {
   const { address } = useAccount();
   const router = useRouter();
-  const { data: profile } = useQuery({
+  const { data: profile, isError } = useQuery({
     queryKey: ["profile", address],
     queryFn: () => {
       const userId = localStorage.getItem("user_id_" + address);
@@ -27,6 +27,12 @@ export default function ProfileMalePage() {
         .then((res) => res.data);
     },
   });
+
+  if (isError) {
+    router.push("/onboarding-male");
+    return null;
+  }
+
   return (
     <div className="w-full max-w-md">
       {profile ? <TinderCard card={profile} /> : <div>Loading...</div>}
