@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 export default function ProfileMalePage() {
   const { address } = useAccount();
   const router = useRouter();
-  const { data: profile } = useQuery({
+  const { data: profile, isError } = useQuery({
     queryKey: ["profile", address],
     queryFn: () => {
       const userId = localStorage.getItem("user_id_" + address);
@@ -27,17 +27,25 @@ export default function ProfileMalePage() {
         .then((res) => res.data);
     },
   });
+
+  if (isError) {
+    router.push("/onboarding-male");
+    return null;
+  }
+
   return (
-    <div className="w-full max-w-md">
-      {profile ? <TinderCard card={profile} /> : <div>Loading...</div>}
-      <div className="mt-8 text-center">
-        <h2 className="text-2xl font-bold text-white mb-4">Profile Complete!</h2>
-        <Link
-          href="/matching"
-          className="bg-white text-pink-500 py-3 px-6 rounded-full text-xl font-semibold hover:bg-pink-100 transition duration-300"
-        >
-          Start Matching
-        </Link>
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="w-full max-w-md">
+        {profile ? <TinderCard card={profile} /> : <div>Loading...</div>}
+        <div className="mt-8 text-center">
+          <h2 className="text-2xl font-bold text-white mb-4">Profile Complete!</h2>
+          <Link
+            href="/matching"
+            className="bg-white text-pink-500 py-3 px-6 rounded-full text-xl font-semibold hover:bg-pink-100 transition duration-300"
+          >
+            Start Matching
+          </Link>
+        </div>
       </div>
     </div>
   );

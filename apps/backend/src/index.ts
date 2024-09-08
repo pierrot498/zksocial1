@@ -9,7 +9,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Initialize TypeORM data source
 AppDataSource.initialize()
@@ -123,12 +124,20 @@ AppDataSource.initialize()
         }
 
         const profile = await profileRepository.findOneBy({ user: { id: userId } });
-
         if (!profile) {
           return res.status(404).json({ message: "Profile not found." });
         }
 
-        res.status(200).json(profile);
+        // Include the image in the response
+        res.status(200).json({
+          id: profile.id,
+          bio: profile.bio,
+          age: profile.age,
+          location: profile.location,
+          name: profile.name,
+          image: profile.image,
+          user: profile.user
+        });
       } catch (error) {
         console.error("Error fetching profile:", error);
         res.status(500).json({ message: "Internal Server Error" });
@@ -143,8 +152,10 @@ AppDataSource.initialize()
           .leftJoinAndSelect("profile.user", "user")
           .where("user.gender = :gender", { gender: "male" })
           .getMany();
+          console.log(profiles)
 
         res.status(200).json(profiles);
+      
       } catch (error) {
         console.error("Error fetching profiles:", error);
         res.status(500).json({ message: "Internal Server Error" });
