@@ -4,7 +4,7 @@ import { PanInfo, motion } from "framer-motion";
 import { Heart, RotateCwIcon, X } from "lucide-react";
 import { useState } from "react";
 
-export type SwipeType = "like" | "nope" | "superlike";
+export type SwipeType = "like" | "dislike";
 
 export interface CardProps {
   card: IProfile;
@@ -15,11 +15,6 @@ const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
   const [leaveX, setLeaveX] = useState(0);
   const [leaveY, setLeaveY] = useState(0);
 
-  const onSuperlike = () => {
-    setLeaveY(-2000);
-    removeCard(card, "superlike");
-  };
-
   const onLike = () => {
     setLeaveX(1000);
     removeCard(card, "like");
@@ -27,13 +22,10 @@ const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
 
   const onNope = () => {
     setLeaveX(-1000);
-    removeCard(card, "nope");
+    removeCard(card, "dislike");
   };
 
   const onDragEnd = (_e: any, info: PanInfo) => {
-    if (info.offset.y < -100) {
-      return onSuperlike();
-    }
     if (info.offset.x > 100) {
       return onLike();
     }
@@ -83,12 +75,6 @@ const Card: React.FC<CardProps> = ({ card, removeCard, active }) => {
           </button>
 
           <button onClick={onLike} className="bg-green-500 p-2 py-4 rounded-full flex items-center justify-center">
-            <Heart className="text-white" />
-          </button>
-          <button
-            onClick={onSuperlike}
-            className="bg-yellow-500 p-2 py-4 rounded-full flex items-center justify-center"
-          >
             <Heart className="text-white" />
           </button>
         </div>

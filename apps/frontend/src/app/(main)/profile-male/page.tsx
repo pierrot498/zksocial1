@@ -33,10 +33,16 @@ export default function ProfileMalePage() {
       <div className="mt-8 text-center">
         <h2 className="text-2xl font-bold text-white mb-4">Profile Complete!</h2>
         <Link
-          href="/matching"
+          href="/onboarding-male"
           className="bg-white text-pink-500 py-3 px-6 rounded-full text-xl font-semibold hover:bg-pink-100 transition duration-300"
         >
-          Start Matching
+          Edit profile
+        </Link>
+        <Link
+          href="/conversation"
+          className="bg-white text-pink-500 py-3 px-6 rounded-full text-xl font-semibold hover:bg-pink-100 transition duration-300"
+        >
+          See matches
         </Link>
       </div>
     </div>
