@@ -10,14 +10,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 // Initialize TypeORM data source
 AppDataSource.initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
 
-    // Define your routes here
     app.post("/authenticate", async (req: Request, res: Response) => {
       const { signature, walletAddress, gender } = req.body;
 
