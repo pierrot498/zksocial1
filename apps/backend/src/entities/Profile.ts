@@ -22,6 +22,6 @@ export class Profile {
   @Column({ nullable: true })
   location?: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "text" })
   image?: string;
 }
