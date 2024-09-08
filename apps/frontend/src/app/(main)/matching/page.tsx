@@ -65,24 +65,22 @@ export default function Page() {
   console.log(cards);
 
   return (
-    <>
-      <div className="flex justify-center items-center h-full">
-        <div>
-          <div className="relative h-[582px] w-[300px]">
-            <AnimatePresence>
-              {cards.map((card, index) => (
-                <Card key={card.id} active={index === activeIndex} removeCard={removeCard} card={card} />
-              ))}
-            </AnimatePresence>
-            {cards.length === 0 ? <span className=" text-xl">End of Stack</span> : null}
-          </div>
-          <footer className="grid grid-cols-3 mt-6">
-            <Counter label="Likes" count={result.like} testid="like-count" />
-            <Counter label="Nopes" count={result.nope} testid="nope-count" />
-            <Counter label="Superlike" count={result.superlike} testid="superlike-count" />
-          </footer>
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="flex flex-col items-center">
+        <div className="relative h-[582px] w-[300px]">
+          <AnimatePresence>
+            {cards.map((card, index) => (
+              <Card key={card.id} active={index === activeIndex} removeCard={removeCard} card={card} />
+            ))}
+          </AnimatePresence>
+          {cards.length === 0 ? <span className="text-xl">End of Stack</span> : null}
         </div>
+        <footer className="grid grid-cols-3 mt-6 w-full">
+          <Counter label="Likes" count={result.like} testid="like-count" />
+          <Counter label="Nopes" count={result.nope} testid="nope-count" />
+          <Counter label="Superlike" count={result.superlike} testid="superlike-count" />
+        </footer>
       </div>
-    </>
+    </div>
   );
 }
