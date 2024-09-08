@@ -12,7 +12,7 @@ export default function LoginMale() {
   const { signMessage } = useSignMessage();
   const router = useRouter();
 
-  const { client, error, isLoading, initialize } = useClient();
+  const { initialize } = useClient();
 
   useEffect(() => {
     const authenticate = async (signature: string) => {
@@ -20,16 +20,13 @@ export default function LoginMale() {
         .post("/authenticate", {
           signature,
           walletAddress: address,
-          gender: "male",
+          gender: "female",
         })
         .then((res) => {
           console.log("res", res);
           localStorage.setItem("user_id_" + address, res.data.user.id);
-          if (res.data.isOnboardingDone) {
-            router.push("/profile-male");
-          } else {
-            router.push("/onboarding-male");
-          }
+
+          router.push("/matching");
         });
     };
 

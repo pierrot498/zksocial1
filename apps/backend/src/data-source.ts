@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { DataSource } from "typeorm";
 import { User } from "./entities/User";
 import { Profile } from "./entities/Profile";
+import { Swipe } from "./entities/Swipes";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -24,7 +25,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: true,
   logging: false,
-  entities: [User, Profile],
+  entities: [User, Profile, Swipe],
   migrations: [],
   subscribers: [],
   ssl: {

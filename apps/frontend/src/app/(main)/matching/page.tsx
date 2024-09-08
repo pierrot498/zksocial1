@@ -6,6 +6,7 @@ import { IProfile } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 export type ResultType = { [k in SwipeType]: number };
 
@@ -34,10 +35,18 @@ const Counter: React.FC<CounterProps> = ({ count, label, testid }) => {
 export default function Page() {
   const [cards, setCards] = useState<IProfile[]>([]);
 
+  const { address } = useAccount();
+
   const { data: cardsData } = useQuery({
-    queryKey: ["cards"],
+    queryKey: ["cards", address],
     queryFn: () => {
-      return axiosInstance.get("/profiles").then((res) => res.data);
+      return axiosInstance
+        .get("/profiles", {
+          params: {
+            userId: localStorage.getItem("user_id_" + address),
+          },
+        })
+        .then((res) => res.data);
     },
   });
 
@@ -48,12 +57,16 @@ export default function Page() {
 
   const [result, setResult] = useState<ResultType>({
     like: 0,
-    nope: 0,
-    superlike: 0,
+    dislike: 0,
   });
   // index of last card
   const activeIndex = cards.length - 1;
   const removeCard = (oldCard: IProfile, swipe: SwipeType) => {
+    axiosInstance.post("/swipe", {
+      userId: localStorage.getItem("user_id_" + address),
+      profileId: oldCard.id,
+      action: swipe,
+    });
     setCards((current) =>
       current.filter((card) => {
         return card.id !== oldCard.id;
@@ -65,22 +78,25 @@ export default function Page() {
   console.log(cards);
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="flex flex-col items-center">
+    <div className="flex justify-center items-center h-full">
+      <div>
         <div className="relative h-[582px] w-[300px]">
           <AnimatePresence>
             {cards.map((card, index) => (
               <Card key={card.id} active={index === activeIndex} removeCard={removeCard} card={card} />
             ))}
           </AnimatePresence>
-          {cards.length === 0 ? <span className="text-xl">End of Stack</span> : null}
+          {cards.length === 0 ? <span className=" text-xl">End of Stack</span> : null}
         </div>
-        <footer className="grid grid-cols-3 mt-6 w-full">
+        <footer className="grid grid-cols-3 mt-6">
           <Counter label="Likes" count={result.like} testid="like-count" />
-          <Counter label="Nopes" count={result.nope} testid="nope-count" />
-          <Counter label="Superlike" count={result.superlike} testid="superlike-count" />
+          <Counter label="Dislikes" count={result.dislike} testid="dislike-count" />
         </footer>
       </div>
+      <footer className="grid grid-cols-3 mt-6 w-full">
+        <Counter label="Likes" count={result.like} testid="like-count" />
+        <Counter label="Nopes" count={result.dislike} testid="nope-count" />
+      </footer>
     </div>
   );
 }

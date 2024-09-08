@@ -34,18 +34,22 @@ export default function ProfileMalePage() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <div className="w-full max-w-md">
-        {profile ? <TinderCard card={profile} /> : <div>Loading...</div>}
-        <div className="mt-8 text-center">
-          <h2 className="text-2xl font-bold text-white mb-4">Profile Complete!</h2>
-          <Link
-            href="/matching"
-            className="bg-white text-pink-500 py-3 px-6 rounded-full text-xl font-semibold hover:bg-pink-100 transition duration-300"
-          >
-            Start Matching
-          </Link>
-        </div>
+    <div className="w-full max-w-md">
+      {profile ? <TinderCard card={profile} /> : <div>Loading...</div>}
+      <div className="mt-8 text-center">
+        <h2 className="text-2xl font-bold text-white mb-4">Profile Complete!</h2>
+        <Link
+          href="/onboarding-male"
+          className="bg-white text-pink-500 py-3 px-6 rounded-full text-xl font-semibold hover:bg-pink-100 transition duration-300"
+        >
+          Edit profile
+        </Link>
+        <Link
+          href="/conversation"
+          className="bg-white text-pink-500 py-3 px-6 rounded-full text-xl font-semibold hover:bg-pink-100 transition duration-300"
+        >
+          See matches
+        </Link>
       </div>
     </div>
   );
