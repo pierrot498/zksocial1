@@ -30,7 +30,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Your name"
-          className="w-full p-4 text-2xl border-b-2 border-pink-500 focus:outline-none"
+          className="w-full p-4 text-2xl border-b-2 border-blue-500 focus:outline-none"
         />
       ),
     },
@@ -42,7 +42,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           value={age}
           onChange={(e) => setAge(e.target.value)}
           placeholder="Your age"
-          className="w-full p-4 text-2xl border-b-2 border-pink-500 focus:outline-none"
+          className="w-full p-4 text-2xl border-b-2 border-blue-500 focus:outline-none"
         />
       ),
     },
@@ -53,7 +53,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           placeholder="A short bio about yourself"
-          className="w-full p-4 text-xl border-2 border-pink-500 rounded-lg h-40 focus:outline-none"
+          className="w-full p-4 text-xl border-2 border-blue-500 rounded-lg h-40 focus:outline-none"
         />
       ),
     },
@@ -79,7 +79,7 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
           />
           <label
             htmlFor="imageUpload"
-            className="bg-pink-500 text-white py-2 px-4 rounded-full cursor-pointer hover:bg-pink-600 transition duration-300"
+            className="bg-blue-500 text-white py-2 px-4 rounded-full cursor-pointer hover:bg-blue-600 transition duration-300"
           >
             Choose Image
           </label>
@@ -104,13 +104,13 @@ export default function ProfileOnboarding({ onComplete }: ProfileOnboardingProps
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md">
-      <div className="h-4 bg-pink-500" style={{ width: `${((step + 1) / steps.length) * 100}%` }}></div>
+      <div className="h-4 bg-blue-500" style={{ width: `${((step + 1) / steps.length) * 100}%` }}></div>
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-8 text-center text-pink-500">{steps[step].title}</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center text-blue-500">{steps[step].title}</h2>
         {steps[step].component}
         <button
           onClick={handleNext}
-          className="w-full bg-pink-500 text-white py-4 rounded-full text-xl font-semibold mt-8 hover:bg-pink-600 transition duration-300"
+          className="w-full bg-blue-500 text-white py-4 rounded-full text-xl font-semibold mt-8 hover:bg-blue-600 transition duration-300"
         >
           {step === steps.length - 1 ? "Complete Profile" : "Next"}
         </button>

@@ -21,7 +21,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const { data: matches } = useQuery({
     queryKey: ["matches", address],
-    queryFn: () => axiosInstance.get("/matches", { params: { userId: localStorage.getItem("user_id_" + address) } }),
+    queryFn: () =>
+      axiosInstance
+        .get("/matches", { params: { userId: localStorage.getItem("user_id_" + address) } })
+        .then((res) => res.data?.matches as [{ walletAddress: string; image: string }]),
   });
 
   console.log("matches", matches);
@@ -51,6 +54,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               isActive={selectedConversation?.peerAddress === conversation.peerAddress}
             />
           ))}
+          <p>New matches ({matches?.length}) </p>
+          {matches
+            ?.filter((match) => !conversations.find((conversation) => conversation.peerAddress === match.walletAddress))
+            .map((match) => (
+              <ConversationItem
+                key={match.walletAddress}
+                name={match.walletAddress}
+                message={""}
+                time={""}
+                avatar={match.image}
+                onClick={() => {
+                  router.push(`/messages/${match.walletAddress}`);
+                }}
+                isActive={selectedConversation?.peerAddress === match.walletAddress}
+              />
+            ))}
         </div>
       </div>
 

@@ -24,7 +24,9 @@ export default function LoginMale() {
         })
         .then((res) => {
           console.log("res", res);
-          localStorage.setItem("user_id_" + address, res.data.user.id);
+          localStorage.setItem("user_id", res.data.user.id);
+          localStorage.setItem("user_gender", "female");
+          localStorage.setItem("user_address", address || "");
 
           router.push("/matching");
         });
@@ -67,8 +69,11 @@ export default function LoginMale() {
   }, [address, isConnected, router, signMessage, initialize]);
 
   return (
-    <div>
-      <ConnectButton />
+    <div className="flex justify-center items-center h-full">
+      <div className="mt-10">
+        <h1 className="text-2xl font-semibold text-rose-500">Login Female</h1>
+        <ConnectButton />
+      </div>
     </div>
   );
 }

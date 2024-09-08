@@ -93,10 +93,6 @@ export default function Page() {
           <Counter label="Dislikes" count={result.dislike} testid="dislike-count" />
         </footer>
       </div>
-      <footer className="grid grid-cols-3 mt-6 w-full">
-        <Counter label="Likes" count={result.like} testid="like-count" />
-        <Counter label="Nopes" count={result.dislike} testid="nope-count" />
-      </footer>
     </div>
   );
 }
